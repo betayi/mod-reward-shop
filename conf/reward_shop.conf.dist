@@ -6,14 +6,15 @@
 #        Default:     Enabled  = 1
 #                     Disabled = 0
 
-RewardShopEnable = 1
+RewardShopEnable = 0
 
 #
 #    WebsiteAddress
 #        Description: This is what the NPC say's when a player clicks "How do i get a code?"
 #        Default:     "You can get codes by visiting the online store at (Website Here)"
 
-WebsiteAddress = "You can get codes by visiting the online store at: www.wildhammer.co.uk"
+WebsiteAddress = "请与群管理了解兑换码获取方式吧"
+Says = "礼品促销：专业秒满、虚灵、G优惠，需要吗？"
 
 #
 #    AllowGM

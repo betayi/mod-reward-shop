@@ -38,10 +38,10 @@ public:
         if (!sConfigMgr->GetOption<bool>("RewardShopEnable", 0))
             return false;
 
-        std::string text = "Enter code and press accept";
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "I'd like to redeem my code.", GOSSIP_SENDER_MAIN, 1, text, 0, true);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "How do i get a code?", GOSSIP_SENDER_MAIN, 2);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "I dont have a code.", GOSSIP_SENDER_MAIN, 3);
+        std::string text = "输入兑换码并点击确认完成礼品兑换";
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "我有兑换码要兑换", GOSSIP_SENDER_MAIN, 1, text, 0, true);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "兑换码怎么来?", GOSSIP_SENDER_MAIN, 2);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "再见.", GOSSIP_SENDER_MAIN, 3);
 
         if (sConfigMgr->GetOption<bool>("AllowGM", 1) && player->IsGameMaster())
         {
@@ -104,7 +104,7 @@ public:
         std::string playerIP = player->GetSession()->GetRemoteAddress();
         std::string rewardcode = code;
         std::ostringstream messageCode;
-        messageCode << "Sorry " << player->GetName() << ", that is not a valid code or has already been redeemed.";
+        messageCode << "这样," << player->GetName() << ", 这个码：" << rewardcode << " 兑换不了，如果你确定输入的是正规无误的兑换码，那么请截图并发送给群管理报告一下，以便查明原因";
 
         std::size_t found = rewardcode.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-");
 
@@ -154,7 +154,7 @@ public:
 
                 if (count == 0 || dest.empty())
                 {
-                    ChatHandler(player->GetSession()).PSendSysMessage("Can not create item either item is unique or you do not have any space");
+                    ChatHandler(player->GetSession()).PSendSysMessage("包里没空间了还是你已经有了这么一个只能唯一的东西了？");
                     ChatHandler(player->GetSession()).SetSentErrorMessage(true);
                     return false;
                 }
@@ -166,7 +166,7 @@ public:
                 break;
             case 2: /* Gold */
                 player->ModifyMoney(action_data * 10000);
-                ChatHandler(player->GetSession()).PSendSysMessage("CHAT OUTPUT: Successfully added [%u G]", action_data);
+                ChatHandler(player->GetSession()).PSendSysMessage("请查收 [%u G]", action_data);
                 break;
             case 3: /* Name Change */
                 player->SetAtLoginFlag(AT_LOGIN_RENAME);
@@ -193,7 +193,7 @@ public:
         npc_reward_shopAI(Creature *creature) : ScriptedAI(creature) {}
         uint32 say_timer;
         bool canSay;
-
+        std::string info = sConfigMgr->GetOption<std::string>("Says", "礼品活动促销，看看吗？");
         void Reset()
         {
             say_timer = 1000;
@@ -216,7 +216,7 @@ public:
             {
                 if (canSay)
                 {
-                    me->Say("Do you have a code to redeem? Step right up!", LANG_UNIVERSAL);
+                    me->Say(Says, LANG_UNIVERSAL);
                     me->HandleEmoteCommand(EMOTE_ONESHOT_EXCLAMATION);
                     say_timer = 61000;
                 }
