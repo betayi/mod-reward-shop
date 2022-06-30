@@ -14,8 +14,8 @@ RewardShopEnable = 0
 #        Default:     "You can get codes by visiting the online store at (Website Here)"
 
 WebsiteAddress = "请与群管理了解兑换码获取方式吧"
-Says = "礼品促销：专业秒满、虚灵、G优惠，需要吗？"
-
+Says = "礼品优惠，游戏更轻松，需要吗？"
+GiftBuff = 20911
 #
 #    AllowGM
 #        Description: This allows GMs to generate codes from the creature itself without having to visit the store (Will save GM name who generate the code)
@@ -23,3 +23,4 @@ Says = "礼品促销：专业秒满、虚灵、G优惠，需要吗？"
 #                     Disabled = 0
 
 AllowGM = 0
+

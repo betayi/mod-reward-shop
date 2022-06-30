@@ -38,10 +38,10 @@ public:
         if (!sConfigMgr->GetOption<bool>("RewardShopEnable", 0))
             return false;
 
-        std::string text = "输入兑换码并点击确认完成礼品兑换";
+        std::string text = "粘贴或者输入兑换码并点击确认完成礼品兑换";
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, "我有兑换码要兑换", GOSSIP_SENDER_MAIN, 1, text, 0, true);
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, "兑换码怎么来?", GOSSIP_SENDER_MAIN, 2);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "再见.", GOSSIP_SENDER_MAIN, 3);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "再见!", GOSSIP_SENDER_MAIN, 3);
 
         if (sConfigMgr->GetOption<bool>("AllowGM", 1) && player->IsGameMaster())
         {
@@ -65,6 +65,7 @@ public:
         std::string CreatedBy = player->GetName();
         std::ostringstream randomcode;
         randomcode << "GM-" << rnd1 << "-" << rnd2 << "-" << rnd3 << "-" << rnd4 << "-" << rnd5;
+        uint32 GiftBuff = sConfigMgr->GetOption<int32>("GiftBuff", 47292);
 
         switch (action)
         {
@@ -74,6 +75,7 @@ public:
             break;
         case 3:
             CloseGossipMenuFor(player);
+            creature->CastSpell(player,GiftBuff,true);
             break;
         case 4:
             player->PlayerTalkClass->ClearMenus();
@@ -193,7 +195,7 @@ public:
         npc_reward_shopAI(Creature *creature) : ScriptedAI(creature) {}
         uint32 say_timer;
         bool canSay;
-        std::string info = sConfigMgr->GetOption<std::string>("Says", "礼品活动促销，看看吗？");
+        std::string Says = sConfigMgr->GetOption<std::string>("Says", "礼品优惠，游戏更轻松，需要吗？");
         void Reset()
         {
             say_timer = 1000;
