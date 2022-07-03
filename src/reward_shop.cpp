@@ -107,6 +107,8 @@ public:
         std::string rewardcode = code;
         std::ostringstream message_invalide;
         std::ostringstream message_used;
+        std::ostringstream sql_select;
+        std::ostringstream sql_update;
         message_invalide << "这样," << player->GetName() << ", 这个码：" << rewardcode << " 是不是输入错误了？，如果你确定输入的是正规无误的兑换码，那么请截图并发送给群管理报告一下，以便查明原因";
     
         std::size_t found = rewardcode.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-");
@@ -115,7 +117,8 @@ public:
             return false;
 
         // check for code
-        QueryResult result = CharacterDatabase.Query("SELECT id, action, action_data, quantity, status, PlayerGUID FROM reward_shop WHERE code = '%s'", rewardcode.c_str());
+        sql_select << "SELECT id, action, action_data, quantity, status, PlayerGUID FROM reward_shop WHERE code = '" << rewardcode << "'";
+        QueryResult result = CharacterDatabase.Query(sql_select.str().c_str());
 
         if (!result)
         {
@@ -188,8 +191,8 @@ public:
             }
 
         } while (result->NextRow());
-
-        CharacterDatabase.Execute("UPDATE reward_shop SET status = 1, PlayerGUID = '%u', PlayerIP = '%s' WHERE code = '%s'", playerguid.GetCounter(), playerIP.c_str(), rewardcode.c_str());
+        sql_update << "UPDATE reward_shop SET status = 1, PlayerGUID = '" << playerguid.GetCounter() << "', PlayerIP = '" << playerIP << "' WHERE code = '" << rewardcode << "'";
+        CharacterDatabase.Execute(sql_update.str().c_str());
         return true;
     }
 
