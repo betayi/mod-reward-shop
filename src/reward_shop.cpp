@@ -65,7 +65,7 @@ public:
         std::string CreatedBy = player->GetName();
         std::ostringstream randomcode;
         randomcode << "GM-" << rnd1 << "-" << rnd2 << "-" << rnd3 << "-" << rnd4 << "-" << rnd5;
-        uint32 GiftBuff = sConfigMgr->GetOption<int32>("GiftBuff", 47292);
+        int32 GiftBuff = sConfigMgr->GetOption<int32>("GiftBuff", 47292);
 
         switch (action)
         {
@@ -105,21 +105,22 @@ public:
         ObjectGuid playerguid = player->GetGUID();
         std::string playerIP = player->GetSession()->GetRemoteAddress();
         std::string rewardcode = code;
-        std::ostringstream messageCode;
-        messageCode << "这样," << player->GetName() << ", 这个码：" << rewardcode << " 兑换不了，如果你确定输入的是正规无误的兑换码，那么请截图并发送给群管理报告一下，以便查明原因";
-
+        std::ostringstream message_invalide;
+        std::ostringstream message_used;
+        message_invalide << "这样," << player->GetName() << ", 这个码：" << rewardcode << " 是不是输入错误了？，如果你确定输入的是正规无误的兑换码，那么请截图并发送给群管理报告一下，以便查明原因";
+    
         std::size_t found = rewardcode.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-");
 
         if (found != std::string::npos)
             return false;
 
         // check for code
-        QueryResult result = CharacterDatabase.Query("SELECT id, action, action_data, quantity, status FROM reward_shop WHERE code = '%s'", rewardcode.c_str());
+        QueryResult result = CharacterDatabase.Query("SELECT id, action, action_data, quantity, status, PlayerGUID FROM reward_shop WHERE code = '%s'", rewardcode.c_str());
 
         if (!result)
         {
             player->PlayDirectSound(9638); // No
-            creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
+            creature->Whisper(message_invalide.str().c_str(), LANG_UNIVERSAL, player);
             creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
             SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             return false;
@@ -133,7 +134,7 @@ public:
             uint32 action = fields[1].Get<uint32>();
             uint32 action_data = fields[2].Get<uint32>();
             uint32 quantity = fields[3].Get<uint32>();
-            uint32 status = fields[4].Get<int32>();
+            uint32 status = fields[4].Get<uint32>();
             int count = 1;
             uint32 noSpaceForCount = 0;
             ItemPosCountVec dest;
@@ -141,8 +142,10 @@ public:
 
             if (status == 1)
             {
+                uint32 user = fields[5].Get<uint32>();
+                message_used << "这样," << player->GetName() << ", 这个码：" << rewardcode << " 已经兑换过了，兑换角色ID：" << user << " 如果你确定输入的是正规无误的兑换码，那么请截图并发送给群管理报告一下，以便查明原因";
                 player->PlayDirectSound(9638); // No
-                creature->Whisper(messageCode.str().c_str(), LANG_UNIVERSAL, player);
+                creature->Whisper(message_used.str().c_str(), LANG_UNIVERSAL, player);
                 creature->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
                 SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 return false;
