@@ -65,7 +65,7 @@ public:
         std::string CreatedBy = player->GetName();
         std::ostringstream randomcode;
         randomcode << "GM-" << rnd1 << "-" << rnd2 << "-" << rnd3 << "-" << rnd4 << "-" << rnd5;
-        int32 GiftBuff = sConfigMgr->GetOption<int32>("GiftBuff", 47292);
+        uint32 GiftBuff = sConfigMgr->GetOption<uint32>("GiftBuff", 47292);
 
         switch (action)
         {
@@ -115,7 +115,7 @@ public:
             return false;
 
         // check for code
-        QueryResult result = CharacterDatabase.Query("SELECT id, action, action_data, quantity, status, PlayerGUID FROM reward_shop WHERE code = '%s'", rewardcode.c_str());
+        QueryResult result = CharacterDatabase.PQuery("SELECT id, action, action_data, quantity, status, PlayerGUID FROM reward_shop WHERE code = '%s'", rewardcode.c_str());
 
         if (!result)
         {
